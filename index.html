@@ -1,5 +1,42 @@
 <!doctype html>
-<html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Emmanuel - Data Analyst</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
+
+      #chart {
+        width: 100%;
+        max-width: 700px;
+      }
+
+      #chart svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .bar {
+        fill: steelblue;
+      }
+
+      .bar:hover {
+        fill: orange;
+      }
+    </style>
+
+    <!-- Load D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  </head>
+
   <body>
     <h1>Emmanuel</h1>
 
@@ -22,14 +59,88 @@
     </ol>
 
     <p>modification faite le 19 octobre 2026</p>
-
     <p>deuxième modification faite le 19 octobre</p>
-
     <p>nouvelle modification pour rajouter sur site web</p>
 
     <p>
-      Favorite Website :
-      <a href="https://github.com" target="_blank">GitHub</a>
+      Favorite Website:
+      <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+        GitHub
+      </a>
     </p>
+
+    <h3>Data visualization</h3>
+    <div id="chart"></div>
+
+    <script>
+      const data = [
+        { name: "A", value: 1 },
+        { name: "B", value: 5 },
+        { name: "C", value: 8 },
+        { name: "D", value: 10 },
+      ];
+
+      // Check that D3.js has loaded
+      if (typeof d3 === "undefined") {
+        document.getElementById("chart").textContent =
+          "Error: D3.js did not load. Check your internet connection.";
+      } else {
+        const width = 700;
+        const height = 350;
+        const margin = { top: 30, right: 20, bottom: 40, left: 45 };
+
+        const svg = d3
+          .select("#chart")
+          .append("svg")
+          .attr("viewBox", `0 0 ${width} ${height}`)
+          .attr("role", "img")
+          .attr("aria-label", "Bar chart of values A to D");
+
+        const x = d3
+          .scaleBand()
+          .domain(data.map((d) => d.name))
+          .range([margin.left, width - margin.right])
+          .padding(0.25);
+
+        const y = d3
+          .scaleLinear()
+          .domain([0, 11])
+          .range([height - margin.bottom, margin.top]);
+
+        // X axis
+        svg
+          .append("g")
+          .attr("transform", `translate(0,${height - margin.bottom})`)
+          .call(d3.axisBottom(x));
+
+        // Y axis
+        svg
+          .append("g")
+          .attr("transform", `translate(${margin.left},0)`)
+          .call(d3.axisLeft(y));
+
+        // Bars
+        svg
+          .selectAll("rect")
+          .data(data)
+          .join("rect")
+          .attr("class", "bar")
+          .attr("x", (d) => x(d.name))
+          .attr("y", (d) => y(d.value))
+          .attr("width", x.bandwidth())
+          .attr("height", (d) => y(0) - y(d.value));
+
+        // Value labels
+        svg
+          .selectAll(".label")
+          .data(data)
+          .join("text")
+          .attr("class", "label")
+          .attr("x", (d) => x(d.name) + x.bandwidth() / 2)
+          .attr("y", (d) => y(d.value) - 8)
+          .attr("text-anchor", "middle")
+          .text((d) => d.value);
+      }
+    </script>
   </body>
 </html>
